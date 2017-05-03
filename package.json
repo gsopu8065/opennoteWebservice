@@ -6,6 +6,7 @@
     "express": "~4.13.1",
     "body-parser": "1.15.0",
     "firebase-admin": "^4.0.3",
-    "mongodb": "2.1.16"
+    "mongodb": "2.1.16",
+    "lodash": "4.17.4"
   }
 }
