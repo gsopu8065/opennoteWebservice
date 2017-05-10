@@ -13,11 +13,13 @@ var ObjectID = require('mongodb').ObjectID
  "userName": "Jack",
  "isAnnonymous": true,
  "location":[-77.18621789486043,
- 38.82741811639861]
+ 38.82741811639861],
+ "type": "text|commentText",
+ "parentId" : null | "commentstatusId | statusId",
+ "statusGroupId" : null | "statusId"
  }*/
 app.post('/saveStatus', function (req, res) {
     var status = req.body;
-    status.type = "text";
     status.emotions = {
         "201": 0,
         "202": 0
