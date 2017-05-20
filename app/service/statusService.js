@@ -20,10 +20,7 @@ var ObjectID = require('mongodb').ObjectID
  }*/
 app.post('/saveStatus', function (req, res) {
     var status = req.body;
-    status.emotions = {
-        "201": 0,
-        "202": 0
-    };
+    status.emotions = {};
     status.timeStamp = Math.floor(Date.now());
 
     mongoDbConnection(function (databaseConnection) {
@@ -207,9 +204,28 @@ app.post('/blockUser', function (req, res) {
 app.get('/getStatus', function (req, res) {
     mongoDbConnection(function (databaseConnection) {
         databaseConnection.collection('status', function (error, collection) {
-            collection.find({"_id": ObjectID(req.query.statusId)}).next(function (err, doc) {
-                res.send(doc)
+
+            var repliesPromise = new Promise(function (resolve, reject) {
+
+                collection.find({
+                    "parentId": req.query.statusId,
+                    "type": "commentText"
+                }).toArray(function (err, dbres) {
+                    if (err) {
+                        return reject(err);
+                    }
+                    resolve(dbres);
+                });
+
+            });
+
+            repliesPromise.then(function (dbres, err) {
+                collection.find({"_id": ObjectID(req.query.statusId)}).next(function (err, doc) {
+                    doc.replies = dbres;
+                    res.send(doc)
+                })
             })
+
         });
     });
 });
@@ -227,7 +243,8 @@ app.post('/newsFeed', function (req, res) {
             databaseConnection.collection('status', function (error, collection) {
                 collection.ensureIndex({"location": "2d"});
                 collection.find({
-                    "location": {$geoWithin: {$centerSphere: [location, req.body.radius / 3963.2]}}
+                    "location": {$geoWithin: {$centerSphere: [location, req.body.radius / 3963.2]}},
+                    "type": "text"
                 }).toArray(function (err, dbres) {
                     if (err) {
                         return reject(err);
