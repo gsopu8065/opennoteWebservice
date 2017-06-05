@@ -3,9 +3,10 @@
  */
 var app = require('./../main.js');
 var mongoDbConnection = require('./../database/connection.js');
+var newsFeed = require('./newsFeedService.js');
 var _ = require('lodash');
 
-var ObjectID = require('mongodb').ObjectID
+var ObjectID = require('mongodb').ObjectID;
 
 /* {
  "status": "hello world4",
@@ -36,7 +37,10 @@ app.post('/saveStatus', function (req, res) {
  {
  "statusId" : "123",
  "userId": "12345",
- "emotion":"251"
+ "emotion":"251",
+ "location":[-77.18621789486043,
+ 38.82741811639861],
+ "radius":3
  }
  */
 app.post('/updateStatusEmotion', function (req, res) {
@@ -87,7 +91,7 @@ app.post('/updateStatusEmotion', function (req, res) {
                                     .send('Error in processing');
                             }
                             else {
-                                res.send("success")
+                                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                             }
                         })
                     }
@@ -106,7 +110,7 @@ app.post('/updateStatusEmotion', function (req, res) {
                                     .send('Error in processing');
                             }
                             else {
-                                res.send("success")
+                                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                             }
                         })
                     }
@@ -124,7 +128,10 @@ app.post('/updateStatusEmotion', function (req, res) {
  {
  "statusId" : "123",
  "userId": "12345",
- "emotion":"251"
+ "emotion":"251",
+ "location":[-77.18621789486043,
+ 38.82741811639861],
+ "radius":3
  }
  */
 app.post('/deleteStatusEmotion', function (req, res) {
@@ -164,7 +171,7 @@ app.post('/deleteStatusEmotion', function (req, res) {
                                 .send('Error in processing');
                         }
                         else {
-                            res.send("success")
+                            newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                         }
                     })
             })
@@ -177,7 +184,10 @@ app.post('/deleteStatusEmotion', function (req, res) {
 /*
  {
  "userId" : "123",
- "blockUserId":"123"
+ "blockUserId":"123",
+ "location":[-77.18621789486043,
+ 38.82741811639861],
+ "radius":3
  }
  */
 app.post('/blockUser', function (req, res) {
@@ -193,7 +203,7 @@ app.post('/blockUser', function (req, res) {
                     console.log(err)
                     res.status(505).send('Error in processing');
                 } else {
-                    res.send("success")
+                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                 }
             })
         })
@@ -237,57 +247,7 @@ app.get('/getStatus', function (req, res) {
  "userId":"1234"
  }*/
 app.post('/newsFeed', function (req, res) {
-    var location = req.body.location;
-    mongoDbConnection(function (databaseConnection) {
-        var statusPromise = new Promise(function (resolve, reject) {
-            databaseConnection.collection('status', function (error, collection) {
-                collection.ensureIndex({"location": "2d"});
-                collection.find({
-                    "location": {$geoWithin: {$centerSphere: [location, req.body.radius / 3963.2]}},
-                    "type": "text"
-                }).toArray(function (err, dbres) {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve(dbres);
-                });
-            });
-        });
-
-        statusPromise.then(function (dbres, err) {
-            databaseConnection.collection('users', function (error, collection) {
-                //1) remove blocked status
-                //2) update status emotions
-                //3) and update view count (later)
-
-                collection.find({_id: req.body.userId}).next(function (err, doc) {
-
-                    if (doc != null) {
-
-                        //1) remove blocked status
-                        _.remove(dbres, function (eachStatus) {
-                            return _.indexOf(doc.blocks, eachStatus.userId) != -1;
-                        });
-
-                        //2) update status emotions
-                        var updatedStatus = _.map(dbres, function (eachStatus) {
-                            var userStatus = _.find(doc.status, function (eachUserStatus) {
-                                return eachUserStatus.statusId == eachStatus._id;
-                            });
-                            return _.extend({}, eachStatus, {userStatus: userStatus});
-                        });
-                        res.jsonp(updatedStatus);
-                    }
-                    else {
-                        res.jsonp(dbres);
-                    }
-                });
-            })
-        });
-
-
-    });
-
+    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
 });
 
 
