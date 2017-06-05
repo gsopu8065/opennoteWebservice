@@ -17,7 +17,8 @@ var ObjectID = require('mongodb').ObjectID;
  38.82741811639861],
  "type": "text|commentText",
  "parentId" : null | "commentstatusId | statusId",
- "statusGroupId" : null | "statusId"
+ "statusGroupId" : null | "statusId",
+ "radius":3
  }*/
 app.post('/saveStatus', function (req, res) {
     var status = req.body;
@@ -27,7 +28,7 @@ app.post('/saveStatus', function (req, res) {
     mongoDbConnection(function (databaseConnection) {
         databaseConnection.collection('status', function (error, collection) {
             collection.insert(status, function (err, records) {
-                res.send(records)
+                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
             })
         })
     });
