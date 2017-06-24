@@ -28,24 +28,26 @@ app.post('/saveStatus', function (req, res) {
 
     var locationPromise = new Promise(function (resolve, reject) {
         geocoder.reverseGeocode(status.location[0],status.location[1], function ( err, data ) {
-            /*_.forEach(data.results[0].address_components, function (address_component) {
-                if (address_component.types[0] == "locality" || address_component.types[0] == "political")
-                    status.city = address_component.short_name;
-                if (address_component.types[0] == "administrative_area_level_1")
-                    status.state = address_component.short_name;
-            });*/
-            status.city = _.find(data.results[0].address_components, function(o) {
-                return _.indexOf(o.types, "administrative_area_level_1") != -1
-            }).short_name || "";
-            status.state = _.find(data.results[0].address_components, function(o) {
-                return (_.indexOf(o.types, "locality") != -1) || (_.indexOf(o.types, "political") != -1)
-            }).short_name || "";
 
             if (err) {
                 reject(status)
-            } else {
-                resolve(status)
             }
+
+            var cityModule = _.find(data.results[0].address_components, function(o) {
+                return _.indexOf(o.types, "administrative_area_level_1") != -1
+            });
+
+            var stateModule = _.find(data.results[0].address_components, function(o) {
+                return (_.indexOf(o.types, "locality") != -1) || (_.indexOf(o.types, "political") != -1)
+            });
+
+            if(cityModule != undefined){
+                status.city = cityModule.short_name;
+            }
+            if(stateModule != undefined){
+                status.state = stateModule.short_name;
+            }
+            resolve(status);
         });
     });
 
