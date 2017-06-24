@@ -33,11 +33,11 @@ app.post('/saveStatus', function (req, res) {
                 reject(status)
             }
 
-            var cityModule = _.find(data.results[0].address_components, function(o) {
+            var stateModule = _.find(data.results[0].address_components, function(o) {
                 return _.indexOf(o.types, "administrative_area_level_1") != -1
             });
 
-            var stateModule = _.find(data.results[0].address_components, function(o) {
+            var cityModule = _.find(data.results[0].address_components, function(o) {
                 return (_.indexOf(o.types, "locality") != -1) || (_.indexOf(o.types, "political") != -1)
             });
 
