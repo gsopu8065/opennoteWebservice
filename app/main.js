@@ -58,7 +58,7 @@ app.listen(process.env.PORT || 5000, function () {
         console.log("DB connection is done")
     })
 
-    console.log("Example app listening at http://localhost:%s", 9050)
+    console.log("Example app listening at http://localhost:%s", 5000)
 });
 
 module.exports = app;

@@ -30,16 +30,16 @@ app.post('/saveStatus', function (req, res) {
         geocoder.reverseGeocode(status.location[0],status.location[1], function ( err, data ) {
             /*_.forEach(data.results[0].address_components, function (address_component) {
                 if (address_component.types[0] == "locality" || address_component.types[0] == "political")
-                    state.city = address_component.short_name;
+                    status.city = address_component.short_name;
                 if (address_component.types[0] == "administrative_area_level_1")
-                    state.state = address_component.short_name;
+                    status.state = address_component.short_name;
             });*/
-            state.city = _.find(users, function(o) {
+            status.city = _.find(data.results[0].address_components, function(o) {
                 return _.indexOf(o.types, "administrative_area_level_1") != -1
-            }).short_name;
-            state.state = _.find(users, function(o) {
+            }).short_name || "";
+            status.state = _.find(data.results[0].address_components, function(o) {
                 return (_.indexOf(o.types, "locality") != -1) || (_.indexOf(o.types, "political") != -1)
-            }).short_name;
+            }).short_name || "";
 
             if (err) {
                 reject(status)
