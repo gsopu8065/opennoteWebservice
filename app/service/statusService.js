@@ -5,6 +5,7 @@ var app = require('./../main.js');
 var mongoDbConnection = require('./../database/connection.js');
 var newsFeed = require('./newsFeedService.js');
 var _ = require('lodash');
+var geocoder = require('geocoder');
 
 var ObjectID = require('mongodb').ObjectID;
 
@@ -25,12 +26,31 @@ app.post('/saveStatus', function (req, res) {
     status.emotions = {};
     status.timeStamp = Math.floor(Date.now());
 
-    mongoDbConnection(function (databaseConnection) {
-        databaseConnection.collection('status', function (error, collection) {
-            collection.insert(status, function (err, records) {
-                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+    var locationPromise = new Promise(function (resolve, reject) {
+        geocoder.reverseGeocode(status.location[0],status.location[1], function ( err, data ) {
+            _.forEach(data.results[0].address_components, function (address_component) {
+                if (address_component.types[0] == "locality" || address_component.types[0] == "political")
+                    state.city = address_component.short_name;
+                if (address_component.types[0] == "administrative_area_level_1")
+                    state.state = address_component.short_name;
+            });
+            if (err) {
+                reject(status)
+            } else {
+                resolve(status)
+            }
+        });
+    });
+
+
+    locationPromise.then(function (status1, err) {
+        mongoDbConnection(function (databaseConnection) {
+            databaseConnection.collection('status', function (error, collection) {
+                collection.insert(status1, function (err, records) {
+                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                })
             })
-        })
+        });
     });
 });
 
