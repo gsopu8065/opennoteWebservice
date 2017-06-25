@@ -32,21 +32,6 @@ module.exports = function (statusId, userId, res) {
             });
         });
 
-       /* var statusPromise = new Promise(function (resolve, reject) {
-            repliesPromise.then(function (dbres, err) {
-                databaseConnection.collection('status', function (error, collection) {
-                    collection.find({"_id": ObjectID(statusId)}).next(function (dbErr, doc) {
-                        doc.replies = dbres;
-                        if (err || error || dbErr) {
-                            return reject(err);
-                        }
-                        resolve(doc);
-                    })
-                });
-            });
-        });
-*/
-
         repliesPromise.then(function (dbres, err) {
             databaseConnection.collection('users', function (error, collection) {
                 //1) remove blocked status
