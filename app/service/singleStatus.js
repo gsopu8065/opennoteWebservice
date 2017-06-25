@@ -20,12 +20,18 @@ module.exports = function (statusId, userId, res) {
                     if (err || error) {
                         return reject(err);
                     }
-                    resolve(dbres);
+                    collection.find({"_id": ObjectID(statusId)}).next(function (dbErr, doc) {
+                        doc.replies = dbres;
+                        if (err || error || dbErr) {
+                            return reject(err);
+                        }
+                        resolve(doc);
+                    });
                 });
             });
         });
 
-        var statusPromise = new Promise(function (resolve, reject) {
+       /* var statusPromise = new Promise(function (resolve, reject) {
             repliesPromise.then(function (dbres, err) {
                 databaseConnection.collection('status', function (error, collection) {
                     collection.find({"_id": ObjectID(statusId)}).next(function (dbErr, doc) {
@@ -38,9 +44,9 @@ module.exports = function (statusId, userId, res) {
                 });
             });
         });
+*/
 
-
-        statusPromise.then(function (dbres, err) {
+        repliesPromise.then(function (dbres, err) {
             databaseConnection.collection('users', function (error, collection) {
                 //1) remove blocked status
                 //2) update status emotions
