@@ -4,6 +4,8 @@
 var app = require('./../main.js');
 var mongoDbConnection = require('./../database/connection.js');
 var newsFeed = require('./newsFeedService.js');
+var singleStatus = require('./singleStatus.js');
+
 var _ = require('lodash');
 var geocoder = require('geocoder');
 
@@ -240,34 +242,9 @@ app.post('/blockUser', function (req, res) {
     })
 });
 
-//?statusId=123
+//?statusId=123&userId=1234
 app.get('/getStatus', function (req, res) {
-    mongoDbConnection(function (databaseConnection) {
-        databaseConnection.collection('status', function (error, collection) {
-
-            var repliesPromise = new Promise(function (resolve, reject) {
-
-                collection.find({
-                    "parentId": req.query.statusId,
-                    "type": "commentText"
-                }).toArray(function (err, dbres) {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve(dbres);
-                });
-
-            });
-
-            repliesPromise.then(function (dbres, err) {
-                collection.find({"_id": ObjectID(req.query.statusId)}).next(function (err, doc) {
-                    doc.replies = dbres;
-                    res.send(doc)
-                })
-            })
-
-        });
-    });
+    singleStatus(req.query.statusId, req.query.userId, res)
 });
 
 /*{
