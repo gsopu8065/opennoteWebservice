@@ -4,6 +4,7 @@
  */
 var app = require('./../main.js');
 var mongoDbConnection = require('./../database/connection.js');
+var ObjectID = require('mongodb').ObjectID;
 var _ = require('lodash');
 
 module.exports = function (statusId, userId, res) {
@@ -56,18 +57,16 @@ module.exports = function (statusId, userId, res) {
 
                     if (doc != null) {
 
-                        //1) remove blocked status
-                        _.remove(dbres, function (eachStatus) {
-                            return _.indexOf(doc.blocks, eachStatus.userId) != -1;
+                        console.log("srujan", dbres)
+                        var userStatus = _.find(doc.status, function (eachUserStatus) {
+                            return eachUserStatus.statusId == dbres._id;
                         });
 
-                        //2) update status emotions
-                        var updatedStatus = _.map(dbres, function (eachStatus) {
-                            var userStatus = _.find(doc.status, function (eachUserStatus) {
-                                return eachUserStatus.statusId == eachStatus._id;
-                            });
-                            return _.extend({}, eachStatus, {userStatus: userStatus});
-                        });
+                        var updatedStatus = dbres
+                        if(userStatus){
+                            updatedStatus = _.extend({}, dbres, {userStatus: userStatus});
+                        }
+
                         res.jsonp(updatedStatus);
                     }
                     else {
