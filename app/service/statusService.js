@@ -72,7 +72,8 @@ app.post('/saveStatus', function (req, res) {
  "emotion":"251",
  "location":[-77.18621789486043,
  38.82741811639861],
- "radius":3
+ "radius":3,
+ "singleStatus":true
  }
  */
 app.post('/updateStatusEmotion', function (req, res) {
@@ -123,7 +124,12 @@ app.post('/updateStatusEmotion', function (req, res) {
                                     .send('Error in processing');
                             }
                             else {
-                                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                                if(req.body.singleStatus){
+                                    singleStatus(req.body.statusId, req.body.userId, res)
+                                }
+                                else {
+                                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                                }
                             }
                         })
                     }
@@ -142,7 +148,12 @@ app.post('/updateStatusEmotion', function (req, res) {
                                     .send('Error in processing');
                             }
                             else {
-                                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                                if(req.body.singleStatus){
+                                    singleStatus(req.body.statusId, req.body.userId, res)
+                                }
+                                else {
+                                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                                }
                             }
                         })
                     }
@@ -163,7 +174,8 @@ app.post('/updateStatusEmotion', function (req, res) {
  "emotion":"251",
  "location":[-77.18621789486043,
  38.82741811639861],
- "radius":3
+ "radius":3,
+ "singleStatus":true
  }
  */
 app.post('/deleteStatusEmotion', function (req, res) {
@@ -203,7 +215,12 @@ app.post('/deleteStatusEmotion', function (req, res) {
                                 .send('Error in processing');
                         }
                         else {
-                            newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                            if(req.body.singleStatus){
+                                singleStatus(req.body.statusId, req.body.userId, res)
+                            }
+                            else {
+                                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                            }
                         }
                     })
             })

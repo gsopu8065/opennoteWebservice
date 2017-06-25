@@ -57,7 +57,6 @@ module.exports = function (statusId, userId, res) {
 
                     if (doc != null) {
 
-                        console.log("srujan", dbres)
                         var userStatus = _.find(doc.status, function (eachUserStatus) {
                             return eachUserStatus.statusId == dbres._id;
                         });
