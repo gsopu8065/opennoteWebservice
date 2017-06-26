@@ -42,6 +42,7 @@ module.exports = function(location, radius, userId, res){
                             return _.extend({}, eachStatus, {userStatus: userStatus});*/
                         });
 
+                        console.log("srujan", updatedStatus);
                         resolve(updatedStatus);
                     });
 
