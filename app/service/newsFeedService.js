@@ -22,9 +22,10 @@ module.exports = function(location, radius, userId, res){
                     //get emotions of each status
                     databaseConnection.collection('statusEmotion', function (error, statusEmotionCollection) {
 
+                        console.log("srujan1", statusEmotionCollection);
                         var updatedStatus = _.map(dbres, function (eachStatus) {
 
-                            return statusEmotionCollection.find({"_id": ObjectID(eachStatus._id)}).limit(1).next(function(statusEmotionErr, statusEmotionDocument){
+                            statusEmotionCollection.find({"_id": ObjectID(eachStatus._id)}).limit(1).next(function(statusEmotionErr, statusEmotionDocument){
                                 if (statusEmotionErr) {
                                     return reject(statusEmotionErr);
                                 }
