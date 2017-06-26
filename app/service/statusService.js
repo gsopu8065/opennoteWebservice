@@ -25,7 +25,6 @@ var ObjectID = require('mongodb').ObjectID;
  }*/
 app.post('/saveStatus', function (req, res) {
     var status = req.body;
-    status.emotions = {};
     status.timeStamp = Math.floor(Date.now());
 
     var locationPromise = new Promise(function (resolve, reject) {
@@ -58,7 +57,16 @@ app.post('/saveStatus', function (req, res) {
         mongoDbConnection(function (databaseConnection) {
             databaseConnection.collection('status', function (error, collection) {
                 collection.insert(status1, function (err, records) {
-                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+
+                    databaseConnection.collection('statusEmotion', function (error, statusEmotioncollection) {
+                        var statusEmotionObject = {
+                            "_id": records._id,
+                            "emotions": {}
+                        };
+                        statusEmotioncollection.insert(statusEmotionObject, function (err, statusEmotionRecords) {
+                            newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                        })
+                    });
                 })
             })
         });
