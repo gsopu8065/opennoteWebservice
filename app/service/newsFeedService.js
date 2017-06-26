@@ -18,7 +18,34 @@ module.exports = function(location, radius, userId, res){
                     if (err) {
                         return reject(err);
                     }
-                    resolve(dbres);
+
+                    //get emotions of each status
+                    databaseConnection.collection('statusEmotion', function (error, statusEmotionCollection) {
+
+                        var updatedStatus = _.map(dbres, function (eachStatus) {
+
+                            return statusEmotionCollection.find({"_id": ObjectID(eachStatus._id)}).limit(1).next(function(statusEmotionErr, statusEmotionDocument){
+                                if (statusEmotionErr) {
+                                    return reject(statusEmotionErr);
+                                }
+                                var userStatus = {
+                                    "250" : statusEmotionDocument.emotions["250"].length,
+                                    "251" : statusEmotionDocument.emotions["251"].length
+                                };
+                                return _.extend({}, eachStatus, {userStatus: userStatus});
+
+                            });
+
+                            /*var userStatus = _.find(doc.status, function (eachUserStatus) {
+                                return eachUserStatus.statusId == eachStatus._id;
+                            });
+                            return _.extend({}, eachStatus, {userStatus: userStatus});*/
+                        });
+
+                        resolve(updatedStatus);
+                    });
+
+
                 });
             });
         });
@@ -39,13 +66,13 @@ module.exports = function(location, radius, userId, res){
                         });
 
                         //2) update status emotions
-                        var updatedStatus = _.map(dbres, function (eachStatus) {
+                       /* var updatedStatus = _.map(dbres, function (eachStatus) {
                             var userStatus = _.find(doc.status, function (eachUserStatus) {
                                 return eachUserStatus.statusId == eachStatus._id;
                             });
                             return _.extend({}, eachStatus, {userStatus: userStatus});
-                        });
-                        res.jsonp(updatedStatus);
+                        });*/
+                        res.jsonp(dbres);
                     }
                     else {
                         res.jsonp(dbres);

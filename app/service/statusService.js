@@ -61,7 +61,10 @@ app.post('/saveStatus', function (req, res) {
                     databaseConnection.collection('statusEmotion', function (error, statusEmotioncollection) {
                         var statusEmotionObject = {
                             "_id": records._id,
-                            "emotions": {}
+                            "emotions": {
+                                "250": [],
+                                "251": []
+                            }
                         };
                         statusEmotioncollection.insert(statusEmotionObject, function (err, statusEmotionRecords) {
                             newsFeed(req.body.location, req.body.radius, req.body.userId, res)
