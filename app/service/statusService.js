@@ -57,8 +57,8 @@ app.post('/saveStatus', function (req, res) {
         mongoDbConnection(function (databaseConnection) {
             databaseConnection.collection('status', function (error, collection) {
                 status1.emotions = {
-                    "250": [],
-                    "251": []
+                    "like": [],
+                    "dislike": []
                 };
                 collection.insert(status1, function (err, records) {
                     newsFeed(req.body.location, req.body.radius, req.body.userId, res)

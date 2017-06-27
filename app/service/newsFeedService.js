@@ -18,6 +18,10 @@ module.exports = function (location, radius, userId, res) {
                     if (err) {
                         return reject(err);
                     }
+                    _.forEach(dbres, function(eachStatus) {
+                        eachStatus.emotions.like = eachStatus.emotions.like.length
+                        eachStatus.emotions.dislike = eachStatus.emotions.dislike.length
+                    });
                     return resolve(dbres)
                 });
             });
