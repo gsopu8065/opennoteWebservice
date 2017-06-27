@@ -56,20 +56,12 @@ app.post('/saveStatus', function (req, res) {
     locationPromise.then(function (status1, err) {
         mongoDbConnection(function (databaseConnection) {
             databaseConnection.collection('status', function (error, collection) {
+                status1.emotions = {
+                    "250": [],
+                    "251": []
+                };
                 collection.insert(status1, function (err, records) {
-
-                    databaseConnection.collection('statusEmotion', function (error, statusEmotioncollection) {
-                        var statusEmotionObject = {
-                            "_id": records._id,
-                            "emotions": {
-                                "250": [],
-                                "251": []
-                            }
-                        };
-                        statusEmotioncollection.insert(statusEmotionObject, function (err, statusEmotionRecords) {
-                            newsFeed(req.body.location, req.body.radius, req.body.userId, res)
-                        })
-                    });
+                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                 })
             })
         });
