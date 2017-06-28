@@ -198,10 +198,12 @@ app.post('/deleteStatusEmotion', function (req, res) {
         var statusPromise = new Promise(function (resolve, reject) {
 
             databaseConnection.collection('status', function (error, collection) {
+
                 var increaseField = {};
-                increaseField["emotions." + req.body.emotion] = -1;
+                increaseField["emotions." + req.body.emotion] = req.body.userId;
                 collection.update({"_id": ObjectID(req.body.statusId)},
-                    {$inc: increaseField}
+                    {$pull: increaseField},
+                    { multi: true }
                     , function (err, records) {
                         if (err) {
                             reject(err)
