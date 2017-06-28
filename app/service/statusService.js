@@ -87,19 +87,28 @@ app.post('/updateStatusEmotion', function (req, res) {
         var statusPromise = new Promise(function (resolve, reject) {
             databaseConnection.collection('status', function (error, collection) {
 
-                var increaseField = {};
-                increaseField["emotions." + req.body.emotion] = req.body.userId;
 
-                var v1 = "emotions."+req.body.emotion;
-                collection.update({"_id": ObjectID(req.body.statusId)},
-                    { $addToSet: increaseField }
-                    ,{upsert: true}, function (err, records) {
-                        if (err) {
-                            reject(err)
-                        } else {
-                            resolve(records)
-                        }
-                    });
+                collection.update(
+                    {"_id": ObjectID(req.body.statusId)},
+                    { $pull: { "emotions.like": req.body.userId, "emotions.dislike": req.body.userId } },
+                    { multi: true },
+                    function(error1, res){
+                        var increaseField = {};
+                        increaseField["emotions." + req.body.emotion] = req.body.userId;
+
+                        var v1 = "emotions."+req.body.emotion;
+                        collection.update({"_id": ObjectID(req.body.statusId)},
+                            { $addToSet: increaseField }
+                            ,{upsert: true}, function (err, records) {
+                                if (err) {
+                                    reject(err)
+                                } else {
+                                    resolve(records)
+                                }
+                            });
+                    }
+                );
+
             });
         });
 
