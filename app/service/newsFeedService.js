@@ -18,10 +18,7 @@ module.exports = function (location, radius, userId, res) {
                     if (err) {
                         return reject(err);
                     }
-                    _.forEach(dbres, function(eachStatus) {
-                        eachStatus.emotions.like = eachStatus.emotions.like.length
-                        eachStatus.emotions.dislike = eachStatus.emotions.dislike.length
-                    });
+
                     return resolve(dbres)
                 });
             });
@@ -30,7 +27,8 @@ module.exports = function (location, radius, userId, res) {
         statusPromise.then(function (dbres, err) {
             databaseConnection.collection('users', function (error, collection) {
                 //1) remove blocked status
-                //2) and update view count (later)
+                //2) add user status
+                //3) and update view count (later)
 
                 collection.find({_id: userId}).next(function (err, doc) {
 
@@ -39,6 +37,21 @@ module.exports = function (location, radius, userId, res) {
                         //1) remove blocked status
                         _.remove(dbres, function (eachStatus) {
                             return _.indexOf(doc.blocks, eachStatus.userId) != -1;
+                        });
+
+                        //2) add user status
+                        _.forEach(dbres, function(eachStatus) {
+                            var likeIndex = _.findIndex(eachStatus.emotions.like, function(o) { return o == userId; });
+                            var dislikeIndex = _.findIndex(eachStatus.emotions.dislike, function(o) { return o == userId; });
+                            if(likeIndex != -1){
+                                eachStatus.userstatus.emotion = 'like'
+                            }
+                            if(dislikeIndex != -1){
+                                eachStatus.userstatus.emotion = 'dislike'
+                            }
+
+                            eachStatus.emotions.like = eachStatus.emotions.like.length
+                            eachStatus.emotions.dislike = eachStatus.emotions.dislike.length
                         });
 
                         res.jsonp(dbres);
