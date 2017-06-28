@@ -11,54 +11,28 @@ module.exports = function (statusId, userId, res) {
 
     mongoDbConnection(function (databaseConnection) {
 
-        //first get replies of status
-        var repliesPromise = new Promise(function (resolve, reject) {
-            databaseConnection.collection('status', function (error, collection) {
-                collection.find({
-                    "parentId": statusId,
-                    "type": "commentText"
-                }).toArray(function (err, dbres) {
-                    if (err || error) {
-                        return reject(err);
+        databaseConnection.collection('status', function (error, collection) {
+            collection.find({
+                "parentId": statusId,
+                "type": "commentText"
+            }).toArray(function (err, dbres) {
+                collection.find({"_id": ObjectID(statusId)}).next(function (dbErr, doc) {
+                    doc.replies = dbres;
+                    var likeIndex = _.findIndex(doc.emotions.like, function(o) { return o == userId; });
+                    var dislikeIndex = _.findIndex(doc.emotions.dislike, function(o) { return o == userId; });
+                    if(likeIndex != -1){
+                        doc.userstatusEmotion = 'like'
                     }
-                    collection.find({"_id": ObjectID(statusId)}).next(function (dbErr, doc) {
-                        doc.replies = dbres;
-                        if (err || error || dbErr) {
-                            return reject(err);
-                        }
-                        resolve(doc);
-                    });
+                    if(dislikeIndex != -1){
+                        doc.userstatusEmotion = 'dislike'
+                    }
+
+                    doc.likeCount = doc.emotions.like.length;
+                    doc.dislikeCount = doc.emotions.dislike.length
+                    delete doc.emotions
+                    res.jsonp(doc);
                 });
             });
         });
-
-        repliesPromise.then(function (dbres, err) {
-            databaseConnection.collection('users', function (error, collection) {
-                //1) remove blocked status
-                //2) update status emotions
-                //3) and update view count (later)
-
-                collection.find({_id: userId}).next(function (err, doc) {
-
-                    if (doc != null) {
-
-                        var userStatus = _.find(doc.status, function (eachUserStatus) {
-                            return eachUserStatus.statusId == dbres._id;
-                        });
-
-                        var updatedStatus = dbres
-                        if(userStatus){
-                            updatedStatus = _.extend({}, dbres, {userStatus: userStatus});
-                        }
-
-                        res.jsonp(updatedStatus);
-                    }
-                    else {
-                        res.jsonp(dbres);
-                    }
-                });
-            })
-        });
-
     });
 };
