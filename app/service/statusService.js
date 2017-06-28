@@ -85,21 +85,17 @@ app.post('/updateStatusEmotion', function (req, res) {
 
         //update emotion
         var statusPromise = new Promise(function (resolve, reject) {
-
             databaseConnection.collection('status', function (error, collection) {
-                var increaseField = {};
-                increaseField["emotions." + req.body.emotion] = 1;
+                var v1 = "emotions."+req.body.emotion;
                 collection.update({"_id": ObjectID(req.body.statusId)},
-                    {$inc: increaseField}
+                    { $addToSet: { v1 : req.body.userId } }
                     , function (err, records) {
                         if (err) {
                             reject(err)
                         } else {
                             resolve(records)
                         }
-                    })
-
-
+                    });
             });
         });
 
