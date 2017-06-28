@@ -19,6 +19,21 @@ module.exports = function (location, radius, userId, res) {
                         return reject(err);
                     }
 
+                    //2) add user status
+                    _.forEach(dbres, function(eachStatus) {
+                        var likeIndex = _.findIndex(eachStatus.emotions.like, function(o) { return o == userId; });
+                        var dislikeIndex = _.findIndex(eachStatus.emotions.dislike, function(o) { return o == userId; });
+                        if(likeIndex != -1){
+                            eachStatus.userstatusEmotion = 'like'
+                        }
+                        if(dislikeIndex != -1){
+                            eachStatus.userstatusEmotion = 'dislike'
+                        }
+
+                        eachStatus.likeCount = eachStatus.emotions.like.length;
+                        eachStatus.dislikeCount = eachStatus.emotions.dislike.length
+                    });
+
                     return resolve(dbres)
                 });
             });
@@ -41,17 +56,7 @@ module.exports = function (location, radius, userId, res) {
 
                         //2) add user status
                         _.forEach(dbres, function(eachStatus) {
-                            var likeIndex = _.findIndex(eachStatus.emotions.like, function(o) { return o == userId; });
-                            var dislikeIndex = _.findIndex(eachStatus.emotions.dislike, function(o) { return o == userId; });
-                            if(likeIndex != -1){
-                                eachStatus.userstatus.emotion = 'like'
-                            }
-                            if(dislikeIndex != -1){
-                                eachStatus.userstatus.emotion = 'dislike'
-                            }
-
-                            eachStatus.emotions.like = eachStatus.emotions.like.length
-                            eachStatus.emotions.dislike = eachStatus.emotions.dislike.length
+                            delete eachStatus.emotions
                         });
 
                         res.jsonp(dbres);
