@@ -61,7 +61,13 @@ app.post('/saveStatus', function (req, res) {
                     "dislike": []
                 };
                 collection.insert(status1, function (err, records) {
-                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+
+                    if(req.body.type == 'commentText'){
+                        singleStatus(req.query.parentId, req.query.userId, res)
+                    }
+                    else {
+                        newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                    }
                 })
             })
         });
