@@ -15,7 +15,7 @@ module.exports = function (statusId, userId, res) {
             collection.find({
                 "parentId": statusId,
                 "type": "commentText"
-            }).toArray(function (err, dbres) {
+            }).sort({timeStamp: 1}).toArray(function (err, dbres) {
                 collection.find({"_id": ObjectID(statusId)}).next(function (dbErr, doc) {
                     doc.replies = dbres;
                     var likeIndex = _.findIndex(doc.emotions.like, function(o) { return o == userId; });
