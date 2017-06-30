@@ -63,7 +63,7 @@ app.post('/saveStatus', function (req, res) {
                 collection.insert(status1, function (err, records) {
 
                     if(req.body.type == 'commentText'){
-                        singleStatus(req.body.parentId, req.body.userId, res)
+                        singleStatus(req.body.statusGroupId, req.body.userId, res)
                     }
                     else {
                         newsFeed(req.body.location, req.body.radius, req.body.userId, res)
