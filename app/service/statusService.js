@@ -26,6 +26,7 @@ var ObjectID = require('mongodb').ObjectID;
 app.post('/saveStatus', function (req, res) {
     var status = req.body;
     status.timeStamp = Math.floor(Date.now());
+    status.condition = 1;
 
     var locationPromise = new Promise(function (resolve, reject) {
         geocoder.reverseGeocode(status.location[0],status.location[1], function ( err, data ) {
@@ -71,6 +72,41 @@ app.post('/saveStatus', function (req, res) {
                 })
             })
         });
+    });
+});
+
+/* {
+ "statusId":"statusId",
+ "status": "hello world4",
+ "userId":"12345",
+ "location":[-77.18621789486043,
+ 38.82741811639861],
+ "radius":3
+ }*/
+app.post('/editStatus', function (req, res) {
+    mongoDbConnection(function (databaseConnection) {
+        databaseConnection.collection('status', function (error, collection) {
+            collection.update({ _id: ObjectID(req.body.statusId) },{$set: {"status" : req.body.status, "timeStamp" : Math.floor(Date.now())}}, function (err, records) {
+                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+            })
+        })
+    });
+});
+
+/* {
+ "statusId":"statusId",
+ "userId":"12345",
+ "location":[-77.18621789486043,
+ 38.82741811639861],
+ "radius":3
+ }*/
+app.post('/deleteStatus', function (req, res) {
+    mongoDbConnection(function (databaseConnection) {
+        databaseConnection.collection('status', function (error, collection) {
+            collection.update({ _id: ObjectID(req.body.statusId) },{$set: {"condition" : 0, "timeStamp" : Math.floor(Date.now())}}, function (err, records) {
+                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+            })
+        })
     });
 });
 

@@ -13,7 +13,8 @@ module.exports = function (location, radius, userId, res) {
                 collection.ensureIndex({"location": "2d"});
                 collection.find({
                     "location": {$geoWithin: {$centerSphere: [location, radius / 3963.2]}},
-                    "type": "text"
+                    "type": "text",
+                    "condition": 1
                 }).sort({timeStamp: -1}).toArray(function (err, dbres) {
                     if (err) {
                         return reject(err);
