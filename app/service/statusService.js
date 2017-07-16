@@ -28,6 +28,10 @@ app.post('/saveStatus', function (req, res) {
     status.timeStamp = Math.floor(Date.now());
     status.condition = 1;
 
+    if(req.body.type == 'text'){
+        status.replyCount = 0;
+    }
+
     var locationPromise = new Promise(function (resolve, reject) {
         geocoder.reverseGeocode(status.location[0],status.location[1], function ( err, data ) {
 
@@ -61,15 +65,19 @@ app.post('/saveStatus', function (req, res) {
                     "like": [],
                     "dislike": []
                 };
-                collection.insert(status1, function (err, records) {
 
-                    if(req.body.type == 'commentText'){
-                        singleStatus(req.body.statusGroupId, req.body.userId, res)
-                    }
-                    else {
+                if(req.body.type == 'commentText'){
+                    collection.update({ _id: ObjectID(req.body.statusGroupId)}, { $inc: {replyCount: 1}}, function (err, records) {
+                        collection.insert(status1, function (err, records) {
+                            singleStatus(req.body.statusGroupId, req.body.userId, res)
+                        })
+                    })
+                }
+                else{
+                    collection.insert(status1, function (err, records) {
                         newsFeed(req.body.location, req.body.radius, req.body.userId, res)
-                    }
-                })
+                    })
+                }
             })
         });
     });
