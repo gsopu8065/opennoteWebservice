@@ -15,7 +15,7 @@ module.exports = function (location, radius, userId, res) {
                     "location": {$geoWithin: {$centerSphere: [location, radius / 3963.2]}},
                     "type": "text",
                     "condition": 1
-                }).sort({timeStamp: -1}).toArray(function (err, dbres) {
+                }).toArray(function (err, dbres) {
                     if (err) {
                         return reject(err);
                     }
