@@ -96,8 +96,8 @@ app.post('/saveStatus', function (req, res) {
 app.post('/editStatus', function (req, res) {
     mongoDbConnection(function (databaseConnection) {
         databaseConnection.collection('status', function (error, collection) {
-            collection.findAndModify({ _id: ObjectID(req.body.statusId) },{$set: {"status" : req.body.status, "timeStamp" : Math.floor(Date.now())}}, function (err, records) {
-                res.jsonp(records);
+            collection.update({ _id: ObjectID(req.body.statusId) },{$set: {"status" : req.body.status, "timeStamp" : Math.floor(Date.now())}}, function (err, records) {
+                singleStatusCount(req.body.statusId, req.body.userId, res);
                 //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
             })
         })
