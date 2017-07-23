@@ -5,6 +5,7 @@ var app = require('./../main.js');
 var mongoDbConnection = require('./../database/connection.js');
 var newsFeed = require('./newsFeedService.js');
 var singleStatus = require('./singleStatus.js');
+var singleStatusCount = require('./singleStatusCount.js');
 
 var _ = require('lodash');
 var geocoder = require('geocoder');
@@ -75,7 +76,8 @@ app.post('/saveStatus', function (req, res) {
                 }
                 else{
                     collection.insert(status1, function (err, records) {
-                        newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                        res.jsonp(records);
+                        //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                     })
                 }
             })
@@ -95,7 +97,8 @@ app.post('/editStatus', function (req, res) {
     mongoDbConnection(function (databaseConnection) {
         databaseConnection.collection('status', function (error, collection) {
             collection.update({ _id: ObjectID(req.body.statusId) },{$set: {"status" : req.body.status, "timeStamp" : Math.floor(Date.now())}}, function (err, records) {
-                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                res.jsonp(records);
+                //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
             })
         })
     });
@@ -112,7 +115,8 @@ app.post('/deleteStatus', function (req, res) {
     mongoDbConnection(function (databaseConnection) {
         databaseConnection.collection('status', function (error, collection) {
             collection.update({ _id: ObjectID(req.body.statusId) },{$set: {"condition" : 0, "timeStamp" : Math.floor(Date.now())}}, function (err, records) {
-                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                res.jsonp(records);
+                //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
             })
         })
     });
@@ -190,7 +194,8 @@ app.post('/updateStatusEmotion', function (req, res) {
                                     singleStatus(req.body.statusId, req.body.userId, res)
                                 }
                                 else {
-                                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                                    singleStatusCount(req.body.statusId, req.body.userId, res);
+                                    //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                                 }
                             }
                         })
@@ -214,7 +219,8 @@ app.post('/updateStatusEmotion', function (req, res) {
                                     singleStatus(req.body.statusId, req.body.userId, res)
                                 }
                                 else {
-                                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                                    singleStatusCount(req.body.statusId, req.body.userId, res);
+                                    //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                                 }
                             }
                         })
@@ -283,7 +289,8 @@ app.post('/deleteStatusEmotion', function (req, res) {
                                 singleStatus(req.body.statusId, req.body.userId, res)
                             }
                             else {
-                                newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                                singleStatusCount(req.body.statusId, req.body.userId, res);
+                                //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                             }
                         }
                     })
