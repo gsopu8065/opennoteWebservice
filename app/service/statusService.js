@@ -323,7 +323,7 @@ app.post('/blockUser', function (req, res) {
                     console.log(err)
                     res.status(505).send('Error in processing');
                 } else {
-                    newsFeed(req.body.location, req.body.radius, req.body.userId, res)
+                    res.jsonp("Sucess");
                 }
             })
         })
