@@ -190,13 +190,7 @@ app.post('/updateStatusEmotion', function (req, res) {
                                     .send('Error in processing');
                             }
                             else {
-                                if(req.body.singleStatus){
-                                    singleStatus(req.body.statusId, req.body.userId, res)
-                                }
-                                else {
-                                    singleStatusCount(req.body.statusId, req.body.userId, res);
-                                    //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
-                                }
+                                singleStatusCount(req.body.statusId, req.body.userId, res);
                             }
                         })
                     }
@@ -215,13 +209,7 @@ app.post('/updateStatusEmotion', function (req, res) {
                                     .send('Error in processing');
                             }
                             else {
-                                if(req.body.singleStatus){
-                                    singleStatus(req.body.statusId, req.body.userId, res)
-                                }
-                                else {
-                                    singleStatusCount(req.body.statusId, req.body.userId, res);
-                                    //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
-                                }
+                                singleStatusCount(req.body.statusId, req.body.userId, res);
                             }
                         })
                     }
@@ -285,13 +273,7 @@ app.post('/deleteStatusEmotion', function (req, res) {
                                 .send('Error in processing');
                         }
                         else {
-                            if(req.body.singleStatus){
-                                singleStatus(req.body.statusId, req.body.userId, res)
-                            }
-                            else {
-                                singleStatusCount(req.body.statusId, req.body.userId, res);
-                                //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
-                            }
+                            singleStatusCount(req.body.statusId, req.body.userId, res);
                         }
                     })
             })
