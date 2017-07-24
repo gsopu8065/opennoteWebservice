@@ -70,7 +70,7 @@ app.post('/saveStatus', function (req, res) {
                 if(req.body.type == 'commentText'){
                     collection.update({ _id: ObjectID(req.body.statusGroupId)}, { $inc: {replyCount: 1}}, function (err, records) {
                         collection.insert(status1, function (err, records) {
-                            singleStatus(req.body.statusGroupId, req.body.userId, res)
+                            res.jsonp(records);
                         })
                     })
                 }
