@@ -77,7 +77,6 @@ app.post('/saveStatus', function (req, res) {
                 else{
                     collection.insert(status1, function (err, records) {
                         res.jsonp(records);
-                        //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
                     })
                 }
             })
@@ -88,17 +87,13 @@ app.post('/saveStatus', function (req, res) {
 /* {
  "statusId":"statusId",
  "status": "hello world4",
- "userId":"12345",
- "location":[-77.18621789486043,
- 38.82741811639861],
- "radius":3
+ "userId":"12345"
  }*/
 app.post('/editStatus', function (req, res) {
     mongoDbConnection(function (databaseConnection) {
         databaseConnection.collection('status', function (error, collection) {
             collection.update({ _id: ObjectID(req.body.statusId) },{$set: {"status" : req.body.status, "timeStamp" : Math.floor(Date.now())}}, function (err, records) {
                 singleStatusCount(req.body.statusId, req.body.userId, res);
-                //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
             })
         })
     });
@@ -106,17 +101,13 @@ app.post('/editStatus', function (req, res) {
 
 /* {
  "statusId":"statusId",
- "userId":"12345",
- "location":[-77.18621789486043,
- 38.82741811639861],
- "radius":3
+ "userId":"12345"
  }*/
 app.post('/deleteStatus', function (req, res) {
     mongoDbConnection(function (databaseConnection) {
         databaseConnection.collection('status', function (error, collection) {
             collection.update({ _id: ObjectID(req.body.statusId) },{$set: {"condition" : 0, "timeStamp" : Math.floor(Date.now())}}, function (err, records) {
                 res.jsonp(records);
-                //newsFeed(req.body.location, req.body.radius, req.body.userId, res)
             })
         })
     });
@@ -126,11 +117,7 @@ app.post('/deleteStatus', function (req, res) {
  {
  "statusId" : "123",
  "userId": "12345",
- "emotion":"251",
- "location":[-77.18621789486043,
- 38.82741811639861],
- "radius":3,
- "singleStatus":true
+ "emotion":"251"
  }
  */
 app.post('/updateStatusEmotion', function (req, res) {
@@ -227,11 +214,7 @@ app.post('/updateStatusEmotion', function (req, res) {
  {
  "statusId" : "123",
  "userId": "12345",
- "emotion":"251",
- "location":[-77.18621789486043,
- 38.82741811639861],
- "radius":3,
- "singleStatus":true
+ "emotion":"251"
  }
  */
 app.post('/deleteStatusEmotion', function (req, res) {
@@ -286,10 +269,7 @@ app.post('/deleteStatusEmotion', function (req, res) {
 /*
  {
  "userId" : "123",
- "blockUserId":"123",
- "location":[-77.18621789486043,
- 38.82741811639861],
- "radius":3
+ "blockUserId":"123"
  }
  */
 app.post('/blockUser', function (req, res) {
