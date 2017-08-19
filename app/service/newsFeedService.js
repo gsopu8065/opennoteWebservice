@@ -8,6 +8,8 @@ var _ = require('lodash');
 module.exports = function (location, radius, userId, res) {
 
     mongoDbConnection(function (databaseConnection) {
+        console.log("Srujan location", location.latitude, location.longitude)
+
         var statusPromise = new Promise(function (resolve, reject) {
             databaseConnection.collection('status', function (error, collection) {
                 collection.ensureIndex({"location": "2d"});
