@@ -11,8 +11,9 @@ module.exports = function (location, radius, userId, res) {
         var statusPromise = new Promise(function (resolve, reject) {
             databaseConnection.collection('status', function (error, collection) {
                 collection.ensureIndex({"location": "2d"});
+                var myLocation = [location.latitude, location.longitude];
                 collection.find({
-                    "location": {$geoWithin: {$centerSphere: [location, radius / 3963.2]}},
+                    "location": {$geoWithin: {$centerSphere: [myLocation, radius / 3963.2]}},
                     "type": "text",
                     "condition": 1
                 }).toArray(function (err, dbres) {
