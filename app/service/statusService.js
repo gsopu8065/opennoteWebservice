@@ -34,7 +34,7 @@ app.post('/saveStatus', function (req, res) {
     }
 
     var locationPromise = new Promise(function (resolve, reject) {
-        geocoder.reverseGeocode(status.location[0],status.location[1], function ( err, data ) {
+        geocoder.reverseGeocode(status.location[1],status.location[0], function ( err, data ) {
 
             if (err) {
                 reject(status)
