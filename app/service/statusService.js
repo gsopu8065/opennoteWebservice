@@ -308,4 +308,20 @@ app.post('/newsFeed', function (req, res) {
 });
 
 
+/*{
+ "statusId":"123456"
+ "reportType":[1 to 3],
+ "userId":"1234"
+ }*/
+app.post('/reportIssue', function (req, res) {
+    mongoDbConnection(function (databaseConnection) {
+        databaseConnection.collection('report', function (error, collection) {
+            collection.insert(req.body, function (err, records) {
+                res.jsonp("Sucess");
+            })
+        })
+    })
+});
+
+
 module.exports = app;
