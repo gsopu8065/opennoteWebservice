@@ -8,7 +8,6 @@ var _ = require('lodash');
 module.exports = function (location, radius, userId, res) {
 
     mongoDbConnection(function (databaseConnection) {
-        console.log("Srujan location", location.latitude, location.longitude)
 
         var statusPromise = new Promise(function (resolve, reject) {
             databaseConnection.collection('status', function (error, collection) {
@@ -18,7 +17,7 @@ module.exports = function (location, radius, userId, res) {
                     "location": {$geoWithin: {$centerSphere: [myLocation, radius / 3963.2]}},
                     "type": "text",
                     "condition": 1
-                }).toArray(function (err, dbres) {
+                }).sort({timeStamp: 1}).limit(50).toArray(function (err, dbres) {
                     if (err) {
                         return reject(err);
                     }
